@@ -1,24 +1,24 @@
 /*
   An REPL/Live Coding Mode for Processing- https://github.com/joelmoniz/REPLmode
-  
+
   A mode for Processing - http://processing.org
   Developed during Google Summer of Code 2015
-  
+
   Copyright (c) 2015 Joel Moniz
-  
+
   This program is free software; you can redistribute it and/or
   modify it under the terms of the GNU General Public License
   as published by the Free Software Foundation; either version 2
   of the License, or (at your option) any later version.
-  
+
   This program is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
-  
+
   You should have received a copy of the GNU General Public License
   along with this program; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, 
+  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
   USA.
  */
 package jm.mode.replmode;
@@ -40,7 +40,7 @@ import javax.swing.JPanel;
  * Singleton class responsible for displaying a modal dialog that gives the user
  * a quick overview of the REPL Mode, and allows the user to choose whether or
  * not to show the dialog each time the Mode starts.
- * 
+ *
  * @author Joel Moniz
  */
 public class REPLWelcomeDialog {
@@ -50,30 +50,30 @@ public class REPLWelcomeDialog {
   private String msg;
   private JLabel msgLabel;
   private boolean showEachStartup;
-  
+
   private static REPLWelcomeDialog dialog;
-  
+
   /**
    * Name of the file used to keep track of whether or not the user wants the
    * Welcome dialog to be shown at startup time.
    */
   public static final String DONT_SHOW_AT_STARTUP_FILE = "noshow.repl";
-  
+
   /**
    * Display the welcome dialog at startup time
    */
   public static void showWelcome() {
     Thread t = new Thread (new Runnable() {
-      
+
       @Override
       public void run() {
-        
+
         try {
           // Time for PDE to setup
           Thread.sleep(2500);
           if (dialog == null) {
             dialog = new REPLWelcomeDialog();
-          }    
+          }
           dialog.displayWelcomeDialog();
         } catch (InterruptedException e) {
           e.printStackTrace();
@@ -82,21 +82,21 @@ public class REPLWelcomeDialog {
     });
     t.start();
   }
-  
+
   /**
    * Display the welcome dialog from the Help menu, post startup
    */
   public static void showHelp() {
     if (dialog == null) {
       dialog = new REPLWelcomeDialog();
-    }    
+    }
     dialog.displayHelpDialog();
   }
 
   private REPLWelcomeDialog() {
     cbPanel = new JPanel();
     cbPanel.setLayout(new BoxLayout(cbPanel, BoxLayout.Y_AXIS));
-    msg = "<html><h3><strong>About the REPL Mode</strong>"
+    msg = "<html><h3><strong>About the REPL Mode (java 1.8 target)</strong>"
         + "</h3><p>The REPL Mode is&nbsp;very similar to the Java Mode, "
         + "and supports everything that the Java Mode does.<br>However, it "
         + "aims to bring 2 new features to the table:</p><ul><li>"
@@ -122,37 +122,37 @@ public class REPLWelcomeDialog {
         + "guide, go to <b>Help > REPL Mode- A Guide</b></p><small></html>";
     msgLabel = new JLabel(msg);
     Font msgFont = msgLabel.getFont();
-    msgLabel.setFont(new Font(msgFont.getFontName(), Font.PLAIN, 
+    msgLabel.setFont(new Font(msgFont.getFontName(), Font.PLAIN,
                               msgFont.getSize()));
     cbPanel.add(msgLabel);
-    dontShowEachStartupCheckbox = 
+    dontShowEachStartupCheckbox =
         new JCheckBox("Do not show this message at startup");
     cbPanel.add(dontShowEachStartupCheckbox);
-    
+
     showEachStartup = isShowingEachStartup();
     dontShowEachStartupCheckbox.setSelected(!showEachStartup);
   }
-  
+
   /**
    * @return <code>true</code> if the welcome dialog is to be displayed to the
-   * user each time the REPL Mode is started, false otherwise 
+   * user each time the REPL Mode is started, false otherwise
    */
   private boolean isShowingEachStartup() {
-    URL url = 
+    URL url =
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
     File dir = null;
     try {
       dir = new File(url.toURI());
       dir = dir.getParentFile().getParentFile();
 //      List<String> dirList = Arrays.asList(dir.list());
-      return 
+      return
           !(new File(dir, DONT_SHOW_AT_STARTUP_FILE).exists());
     } catch (URISyntaxException e) {
       e.printStackTrace();
     }
     return true;
   }
-  
+
   /**
    * Function to display the welcome dialog at startup time.
    * Ensures that the dialog is displayed on the EDT.
@@ -165,7 +165,7 @@ public class REPLWelcomeDialog {
 
       @Override
       public void run() {
-        JOptionPane.showMessageDialog(new JFrame(), dialog.cbPanel, 
+        JOptionPane.showMessageDialog(new JFrame(), dialog.cbPanel,
                                       "Welcome to the REPL Mode",
                                       JOptionPane.PLAIN_MESSAGE, null);
         if (dontShowEachStartupCheckbox.isSelected()) {
@@ -201,14 +201,14 @@ public class REPLWelcomeDialog {
    * the Mode whether or not to display the welcome screen at each startup.
    * Since this is generally called once the modal welcome dialog is closed on
    * the EDT, the creation/deletion of the file is done on a new thread.
-   * 
+   *
    * @param showEachStartup
    *          Whether the marker file is to be created (to indicate that the
    *          welcome screen is not be be shown at startup time), or deleted.
    */
   private void handleDontShowCheckbox(boolean showEachStartup) {
     Thread t = new Thread(new Runnable() {
-      
+
       @Override
       public void run() {
         if (showEachStartup) {
@@ -223,11 +223,11 @@ public class REPLWelcomeDialog {
   }
 
   /**
-   * Creates the marker file which indicates that the welcome screen is 
+   * Creates the marker file which indicates that the welcome screen is
    * not be be shown at startup time
    */
   private void setDontShowEachStartupFile() {
-    URL url = 
+    URL url =
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
     File dir = null;
     try {
@@ -243,11 +243,11 @@ public class REPLWelcomeDialog {
   }
 
   /**
-   * Deletes the marker file which indicates that the welcome screen is 
+   * Deletes the marker file which indicates that the welcome screen is
    * not be be shown at startup time
    */
   private void unsetDontShowEachStartupFile() {
-    URL url = 
+    URL url =
         REPLWelcomeDialog.class.getProtectionDomain().getCodeSource().getLocation();
     File dir = null;
     try {
@@ -259,7 +259,7 @@ public class REPLWelcomeDialog {
       e.printStackTrace();
     }
   }
-  
+
   public static void main(String[] args) {
     showWelcome();
   }
